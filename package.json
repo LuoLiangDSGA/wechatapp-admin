@@ -1,7 +1,7 @@
 {
-  "name": "wechat-admin",
+  "name": "wechatapp-admin",
   "version": "1.0.0",
-  "description": "基于Vue.js 2.x系列 + element-ui 内容管理系统解决方案",
+  "description": "基于Vue.js 2.x + element-ui 微信管理员web前端",
   "author": "liang.luo <ll9420416@icloud.com>",
   "private": true,
   "scripts": {

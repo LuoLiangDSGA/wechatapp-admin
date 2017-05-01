@@ -46,12 +46,12 @@
         </el-table>
         <div class="pagination">
             <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="currentPage"
-                :page-size="6"
-                layout="total, prev, pager, next"
-                :total="totalPage">
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="6"
+                    layout="total, prev, pager, next"
+                    :total="totalPage">
             </el-pagination>
         </div>
 
@@ -121,7 +121,8 @@
 //                this.$message.error('删除第' + (index + 1) + '行');
             },
             getData(currentPage){
-                request.get('http://localhost:8089/activity/seekact')
+                request.get('http://localhost:8089/activity/activityList')
+                    .set("token", localStorage.getItem('token'))
                     .query({currentPage: currentPage, pageSize: 6, hobbyNum: this.hobbyNum, isPass: 1})
                     .end((err, res) => {
                         console.log(res);
@@ -170,7 +171,7 @@
             },
             refuseActivity() {
                 this.refuseDialogVisible = false;
-                if (this.reason != ''){
+                if (this.reason != '') {
                     request.post('http://localhost:8089/activity/refuseActivity')
                         .send({
                             passId: this.refuseId,

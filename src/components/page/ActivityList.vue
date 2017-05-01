@@ -8,10 +8,10 @@
         </div>
 
         <el-input style="width: 280px;margin-bottom: 10px"
-            placeholder="活动名称/发起人/地点"
-            icon="search"
-            v-model="searchCondition"
-            :on-icon-click="handleIconClick">
+                  placeholder="活动名称/发起人/地点"
+                  icon="search"
+                  v-model="searchCondition"
+                  :on-icon-click="handleIconClick">
         </el-input>
 
         <el-table :data="activityPage" stripe style="width: 100%">
@@ -51,12 +51,12 @@
         </el-table>
         <div class="pagination">
             <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="currentPage"
-                :page-size="6"
-                layout="total, prev, pager, next"
-                :total="totalPage">
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="6"
+                    layout="total, prev, pager, next"
+                    :total="totalPage">
             </el-pagination>
         </div>
 
@@ -151,7 +151,8 @@
                 //this.$message.error('删除第' + (row.id) + '行');
             },
             getData(currentPage){
-                request.get('http://localhost:8089/activity/seekact')
+                request.get('http://localhost:8089/activity/activityList')
+                    .set("token", localStorage.getItem('token'))
                     .query({
                         currentPage: currentPage,
                         pageSize: 6,
@@ -159,19 +160,23 @@
                         isPass: 0,
                         searchCondition: this.searchCondition
                     }).end((err, res) => {
-                        console.log(res);
-                        if (!res.ok) {
-                        } else {
-                            const result = JSON.parse(res.text).data;
-                            if (result.length == 0) {
-                                this.activityPage = '';
-                            } else {
-                                this.activityPage = result;
-                                this.totalPage = parseInt(JSON.parse(res.text).resMsg.split("_")[0]);
-                                this.currentPage = parseInt(JSON.parse(res.text).resMsg.split("_")[1]);
-                            }
+                    console.log(res);
+                    if (!res.ok) {
+                        if (res.status == 401) {
+                            this.$notify.error('未登录用户，请登录后再使用');
+                            this.$router.push('/login');
                         }
-                    });
+                    } else {
+                        const result = JSON.parse(res.text).data;
+                        if (result.length == 0) {
+                            this.activityPage = '';
+                        } else {
+                            this.activityPage = result;
+                            this.totalPage = parseInt(JSON.parse(res.text).resMsg.split("_")[0]);
+                            this.currentPage = parseInt(JSON.parse(res.text).resMsg.split("_")[1]);
+                        }
+                    }
+                });
             },
             getActivityDetail(actId) {
                 request.get('http://localhost:8089/activity/activitydetail')
@@ -199,7 +204,7 @@
             },
             refuseActivity() {
                 this.refuseDialogVisible = false;
-                if (this.reason != ''){
+                if (this.reason != '') {
                     request.post('http://localhost:8089/activity/refuseActivity')
                         .send({
                             passId: this.refuseId,
@@ -225,7 +230,7 @@
                 }
             },
             handleIconClick(ev) {
-                console.log("搜索关键词："+this.searchCondition);
+                console.log("搜索关键词：" + this.searchCondition);
                 this.getData(1);
             }
         }

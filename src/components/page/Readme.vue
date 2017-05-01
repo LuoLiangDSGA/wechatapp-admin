@@ -119,9 +119,14 @@
         methods: {
             getData () {
                 request.get('http://localhost:8089/activity/admininfo')
+                    .set("token", localStorage.getItem('token'))
                     .end((err, res) => {
                         console.log(res);
                         if (!res.ok) {
+                            if (res.status == 401) {
+                                this.$notify.error('未登录用户，请登录后再使用');
+                                this.$router.push('/login');
+                            }
                         } else {
                             const result = JSON.parse(res.text).data;
                             this.activityNumber = result.activityNumber;

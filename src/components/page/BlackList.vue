@@ -66,10 +66,15 @@
             },
             getData(currentPage){
                 request.get('http://localhost:8089/blacklist/userblacklist')
+                    .set("token", localStorage.getItem('token'))
                     .query({currentPage: currentPage, pageSize: 6})
                     .end((err, res) => {
                         console.log(res);
                         if (!res.ok) {
+                            if (res.status == 401) {
+                                this.$notify.error('未登录用户，请登录后再使用');
+                                this.$router.push('/login');
+                            }
                         } else {
                             const result = JSON.parse(res.text).data;
 //                            if (result.length == 0) {

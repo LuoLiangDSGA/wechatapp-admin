@@ -57,6 +57,7 @@
                                         setTimeout(() => {
                                             self.$router.push('/readme');
                                         }, 1000);
+                                        localStorage.setItem('token', result.resMsg);
                                     } else {
                                         this.$notify.error(JSON.parse(res.text).resMsg);
                                     }

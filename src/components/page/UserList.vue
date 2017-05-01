@@ -52,12 +52,12 @@
 
         <div class="pagination">
             <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="currentPage"
-                :page-size="6"
-                layout="total, prev, pager, next"
-                :total="totalPage">
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="6"
+                    layout="total, prev, pager, next"
+                    :total="totalPage">
             </el-pagination>
         </div>
     </div>
@@ -91,22 +91,29 @@
             },
             getData(currentPage){
                 request.get('http://localhost:8089/user/userlist')
+                    .set("token", localStorage.getItem('token'))
                     .query({
-                        currentPage: currentPage, pageSize: 6
+                        currentPage: currentPage,
+                        pageSize: 6,
+                        searchCondition: this.searchCondition
                     }).end((err, res) => {
-                        console.log(res);
-                        if (!res.ok) {
-                        } else {
-                            const result = JSON.parse(res.text).data;
-                            if (result.length == 0) {
-                                this.userPage = '';
-                            } else {
-                                this.userPage = result;
-                                this.totalPage = Number(JSON.parse(res.text).resMsg.split("_")[0]);
-                                this.currentPage = Number(JSON.parse(res.text).resMsg.split("_")[1]);
-                            }
+                    console.log(res);
+                    if (!res.ok) {
+                        if (res.status == 401) {
+                            this.$notify.error('未登录用户，请登录后再使用');
+                            this.$router.push('/login');
                         }
-                    });
+                    } else {
+                        const result = JSON.parse(res.text).data;
+                        if (result.length == 0) {
+                            this.userPage = '';
+                        } else {
+                            this.userPage = result;
+                            this.totalPage = Number(JSON.parse(res.text).resMsg.split("_")[0]);
+                            this.currentPage = Number(JSON.parse(res.text).resMsg.split("_")[1]);
+                        }
+                    }
+                });
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
@@ -118,7 +125,7 @@
             },
             addBlackList() {
                 this.dialogVisible = false;
-                if (this.reason != ''){
+                if (this.reason != '') {
                     request.post('http://localhost:8089/blacklist/adduser')
                         .send({
                             userId: this.userId,
